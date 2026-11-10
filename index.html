@@ -1,89 +1,68 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Vitrine de Ofertas</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        .produto-card {
-            background: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-align: left;
-        }
-        .produto-card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        .produto-info {
-            flex: 1;
-        }
-        .produto-info h3 {
-            font-size: 15px;
-            color: #333;
-            margin: 0 0 8px 0;
-        }
-        .btn-comprar {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: bold;
-        }
-        .btn-comprar:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Vitrine</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f4f4f9; padding: 15px; }
+    h1 { text-align: center; margin-bottom: 20px; color: #333; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+    .card { background: #fff; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+    .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; }
+    .card h3 { font-size: 14px; margin: 10px 0; color: #222; }
+    .card a { display: inline-block; background: #25d366; color: #fff; text-decoration: none; padding: 8px 12px; border-radius: 5px; font-size: 13px; font-weight: bold; }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Minha Vitrine</h1>
-        <p>As melhores ofertas do Mercado Livre e Shopee</p>
+  <h1>Minha Vitrine</h1>
+  <div class="grid" id="produtos">Carregando produtos...</div>
 
-        <!-- PRODUTO 1 -->
-        <div class="produto-card">
-            <img src="COLIQUE_O_LINK_DA_FOTO_AQUI" alt="Produto">
-            <div class="produto-info">
-                <h3>Nome do Produto Exemplo</h3>
-                <a href="COLE_SEU_LINK_DE_AFILIADO_AQUI" target="_blank" class="btn-comprar">Ver Oferta</a>
-            </div>
-        </div>
+  <script>
+    const LINK_DA_PLANILHA = "https://docs.google.com/spreadsheets/d/1Dan4PfwG_UKG-gRPTirkZMvD72o3JpjczMfWWL3ajBk/edit?usp=drivesdk";
 
-        <!-- Você pode copiar o bloco acima (produto-card) para adicionar mais produtos -->
+    function extrairId(url) {
+      const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      return match ? match[1] : null;
+    }
 
-    </div>
+    const idPlanilha = extrairId(LINK_DA_PLANILHA);
 
+    if (idPlanilha) {
+      const urlCsv = `https://docs.google.com/spreadsheets/d/${idPlanilha}/gviz/tq?tqx=out:csv`;
+
+      fetch(urlCsv)
+        .then(res => res.text())
+        .then(csvText => {
+          const linhas = csvText.split('\n').slice(1);
+          const container = document.getElementById('produtos');
+          container.innerHTML = '';
+
+          linhas.forEach(linha => {
+            const colunas = linha.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+            const nome = colunas[0];
+            const link = colunas[1];
+            const foto = colunas[2];
+
+            if (nome && link) {
+              container.innerHTML += `
+                <div class="card">
+                  <img src="${foto || 'https://via.placeholder.com/150'}" alt="${nome}">
+                  <h3>${nome}</h3>
+                  <a href="${link}" target="_blank">Ver Produto</a>
+                </div>
+              `;
+            }
+          });
+        })
+        .catch(() => {
+          document.getElementById('produtos').innerText = 'Erro ao carregar produtos. Verifique se a planilha está pública.';
+        });
+    } else {
+      document.getElementById('produtos').innerText = 'Link da planilha inválido.';
+    }
+  </script>
 </body>
 </html>
