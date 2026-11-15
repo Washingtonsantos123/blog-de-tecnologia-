@@ -1,24 +1,34 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minha Vitrine</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #f4f4f9; padding: 15px; }
-    h1 { text-align: center; margin-bottom: 20px; color: #333; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-    .card { background: #fff; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
-    .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; }
-    .card h3 { font-size: 14px; margin: 10px 0; color: #222; }
-    .card a { display: inline-block; background: #25d366; color: #fff; text-decoration: none; padding: 8px 12px; border-radius: 5px; font-size: 13px; font-weight: bold; }
-  </style>
+  <title>Vitrine de Ofertas - Shopee & Mercado Livre</title>
+  <!-- Tailwind CSS para estilizar tudo moderno e responsivo -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col justify-between">
 
-  <h1>Minha Vitrine</h1>
-  <div class="grid" id="produtos">Carregando produtos...</div>
+  <!-- Cabeçalho Estilizado -->
+  <header class="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white shadow-lg py-6 px-4 text-center">
+    <h1 class="text-3xl font-black tracking-wide drop-shadow">🔥 VITRINE DE OFERTAS</h1>
+    <p class="text-sm font-medium opacity-95 mt-1">Os melhores achados da Shopee e do Mercado Livre em um só lugar!</p>
+  </header>
+
+  <!-- Container dos Produtos -->
+  <main class="container mx-auto px-4 py-8 flex-grow">
+    <div id="produtos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Estado de Carregamento Bonito -->
+      <div class="col-span-full text-center py-12 text-gray-500 font-medium">
+        Carregando ofertas da planilha... 🚀
+      </div>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="bg-gray-900 text-white text-center py-4 text-xs font-medium">
+    <p>&copy; 2026 Vitrine de Ofertas. Todos os direitos reservados.</p>
+  </footer>
 
   <script>
     const LINK_DA_PLANILHA = "https://docs.google.com/spreadsheets/d/1Dan4PfwG_UKG-gRPTirkZMvD72o3JpjczMfWWL3ajBk/edit?usp=drivesdk";
@@ -40,28 +50,70 @@
           const container = document.getElementById('produtos');
           container.innerHTML = '';
 
+          if (linhas.length === 0 || (linhas.length === 1 && linhas[0].trim() === '')) {
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">Nenhum produto encontrado na planilha.</div>';
+            return;
+          }
+
           linhas.forEach(linha => {
+            if (!linha.trim()) return;
             const colunas = linha.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
             const nome = colunas[0];
             const link = colunas[1];
             const foto = colunas[2];
 
             if (nome && link) {
+              // Identifica se é Shopee ou Mercado Livre pelo link
+              const isShopee = link.toLowerCase().includes('shopee');
+              const isMercadoLivre = link.toLowerCase().includes('mercadolivre') || link.toLowerCase().includes('mercadolado');
+
+              // Define as cores e textos com base na plataforma
+              let badgeBg = 'bg-gray-700 text-white';
+              let badgeText = 'Oferta';
+              let btnStyle = 'bg-blue-600 hover:bg-blue-700 text-white';
+              let btnText = 'Ver Oferta ➔';
+
+              if (isShopee) {
+                badgeBg = 'bg-orange-600 text-white';
+                badgeText = 'Shopee';
+                btnStyle = 'bg-orange-500 hover:bg-orange-600 text-white';
+                btnText = 'Comprar na Shopee ➔';
+              } else if (isMercadoLivre) {
+                badgeBg = 'bg-yellow-400 text-blue-900 font-bold';
+                badgeText = 'Mercado Livre';
+                btnStyle = 'bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-black';
+                btnText = 'Comprar no Mercado Livre ➔';
+              }
+
               container.innerHTML += `
-                <div class="card">
-                  <img src="${foto || 'https://via.placeholder.com/150'}" alt="${nome}">
-                  <h3>${nome}</h3>
-                  <a href="${link}" target="_blank">Ver Produto</a>
+                <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-200 flex flex-col justify-between">
+                  <div>
+                    <!-- Imagem e Selo -->
+                    <div class="relative bg-gray-100 h-48 overflow-hidden flex items-center justify-center">
+                      <img src="${foto || 'https://via.placeholder.com/150'}" alt="${nome}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                      <span class="absolute top-3 right-3 text-xs px-3 py-1 rounded-full shadow-md ${badgeBg}">${badgeText}</span>
+                    </div>
+                    <!-- Informações do Produto -->
+                    <div class="p-4">
+                      <h3 class="font-bold text-gray-900 text-base line-clamp-2 mb-2">${nome}</h3>
+                    </div>
+                  </div>
+                  <!-- Botão de Ação Estilizado -->
+                  <div class="p-4 pt-0">
+                    <a href="${link}" target="_blank" class="block w-full text-center py-2.5 px-4 rounded-xl shadow font-bold text-sm transition-all duration-200 ${btnStyle}">
+                      ${btnText}
+                    </a>
+                  </div>
                 </div>
               `;
             }
           });
         })
         .catch(() => {
-          document.getElementById('produtos').innerText = 'Erro ao carregar produtos. Verifique se a planilha está pública.';
+          document.getElementById('produtos').innerHTML = '<div class="col-span-full text-center py-12 text-red-500 font-semibold">Erro ao carregar produtos. Verifique se a planilha está pública na web.</div>';
         });
     } else {
-      document.getElementById('produtos').innerText = 'Link da planilha inválido.';
+      document.getElementById('produtos').innerHTML = '<div class="col-span-full text-center py-12 text-red-500 font-semibold">Link da planilha inválido.</div>';
     }
   </script>
 </body>
