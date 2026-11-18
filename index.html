@@ -4,21 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitrine de Ofertas - Shopee & Mercado Livre</title>
-  <!-- Tailwind CSS para estilizar tudo moderno e responsivo -->
-  <script
-<link rel="stylesheet" href="LINK_DO_SEU_CSS">, src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS corrigido para estilizar tudo moderno e responsivo -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col justify-between">
 
   <!-- Cabeçalho Estilizado -->
   <header class="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white shadow-lg py-6 px-4 text-center">
     <h1 class="text-3xl font-black tracking-wide drop-shadow">🔥 VITRINE DE OFERTAS</h1>
-    <p class="text-sm font-medium opacity-95 mt-1">Os melhores achados da Shopee e do Mercado Livre em um só lugar!</p>
+    <p class="text-sm font-medium opacity-95 mt-1">Os melhores achados da Shopee, Mercado Livre e Mercado Pago em um só lugar!</p>
   </header>
 
   <!-- Container dos Produtos -->
-  <main class="container mx-auto px-4 py-8 flex-grow">
-    <div id="produtos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  <main class="container mx-auto px-3 sm:px-4 py-6 flex-grow">
+    <div id="produtos" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
       <!-- Estado de Carregamento Bonito -->
       <div class="col-span-full text-center py-12 text-gray-500 font-medium">
         Carregando ofertas da planilha... 🚀
@@ -64,48 +63,54 @@
             const foto = colunas[2];
 
             if (nome && link) {
-              // Identifica se é Shopee ou Mercado Livre pelo link
-              const isShopee = link.toLowerCase().includes('shopee');
-              const isMercadoLivre = link.toLowerCase().includes('mercadolivre') || link.toLowerCase().includes('mercadolado');
+              const linkLower = link.toLowerCase();
+              const isShopee = linkLower.includes('shopee');
+              const isMercadoPago = linkLower.includes('mercadopago') || linkLower.includes('mpago');
+              const isMercadoLivre = linkLower.includes('mercadolivre') || linkLower.includes('mercadolado') || linkLower.includes('meli');
 
               // Define as cores e textos com base na plataforma
-              let badgeBg = 'bg-gray-700 text-white';
+              let badgeBg = 'bg-emerald-600 text-white';
               let badgeText = 'Oferta';
-              let btnStyle = 'bg-blue-600 hover:bg-blue-700 text-white';
+              let btnStyle = 'bg-emerald-600 hover:bg-emerald-700 text-white';
               let btnText = 'Ver Oferta ➔';
 
               if (isShopee) {
-                badgeBg = 'bg-orange-600 text-white';
+                badgeBg = 'bg-[#EE4D2D] text-white font-bold';
                 badgeText = 'Shopee';
-                btnStyle = 'bg-orange-500 hover:bg-orange-600 text-white';
+                btnStyle = 'bg-[#EE4D2D] hover:bg-[#d73211] text-white font-extrabold';
                 btnText = 'Comprar na Shopee ➔';
+              } else if (isMercadoPago) {
+                badgeBg = 'bg-[#009EE3] text-white font-bold';
+                badgeText = 'Mercado Pago';
+                btnStyle = 'bg-[#009EE3] hover:bg-[#007eb5] text-white font-extrabold';
+                btnText = 'Ver no Mercado Pago ➔';
               } else if (isMercadoLivre) {
-                badgeBg = 'bg-yellow-400 text-blue-900 font-bold';
+                badgeBg = 'bg-[#FFE600] text-[#2D3277] font-extrabold';
                 badgeText = 'Mercado Livre';
-                btnStyle = 'bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-black';
+                btnStyle = 'bg-[#FFE600] hover:bg-[#f5dc00] text-[#2D3277] font-black';
                 btnText = 'Comprar no Mercado Livre ➔';
               }
 
               container.innerHTML += `
-                <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-200 flex flex-col justify-between">
+                <a href="${link}" target="_blank" rel="noopener noreferrer" class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 flex flex-col justify-between">
                   <div>
-                    <!-- Imagem e Selo -->
-                    <div class="relative bg-gray-100 h-48 overflow-hidden flex items-center justify-center">
-                      <img src="${foto || 'https://via.placeholder.com/150'}" alt="${nome}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
-                      <span class="absolute top-3 right-3 text-xs px-3 py-1 rounded-full shadow-md ${badgeBg}">${badgeText}</span>
+                    <!-- Imagem Clicável e Selo Colorido -->
+                    <div class="relative bg-white h-44 sm:h-52 p-2 overflow-hidden flex items-center justify-center border-b border-gray-100">
+                      <img src="${foto || 'https://placehold.co/400x400/eeeeee/333333?text=Oferta'}" alt="${nome}" onerror="this.src='https://placehold.co/400x400/eeeeee/333333?text=Ver+Produto'" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                      <span class="absolute top-2.5 left-2.5 text-[11px] sm:text-xs px-2.5 py-1 rounded-full shadow ${badgeBg}">${badgeText}</span>
                     </div>
                     <!-- Informações do Produto -->
-                    <div class="p-4">
-                      <h3 class="font-bold text-gray-900 text-base line-clamp-2 mb-2">${nome}</h3>
+                    <div class="p-3 sm:p-4">
+                      <h3 class="font-bold text-gray-900 text-sm sm:text-base line-clamp-2 leading-snug">${nome}</h3>
                     </div>
                   </div>
                   <!-- Botão de Ação Estilizado -->
-                  <div class="p-4 pt-0">
-                    <a href="${link}" target="_blank" class="block w-full text-center py-2.5 px-4 rounded-xl shadow font-bold text-sm transition-all duration-200 ${btnStyle}">
+                  <div class="p-3 sm:p-4 pt-0">
+                    <span class="block w-full text-center py-2.5 px-3 rounded-xl shadow-md text-xs sm:text-sm transition-all duration-200 ${btnStyle}">
                       ${btnText}
-                    </a>
+                    </span>
                   </div>
-                </div>
+                </a>
               `;
             }
           });
